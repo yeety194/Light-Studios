@@ -1,1 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light Studio — Books & Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1614;
+      --paper: #f5f0ea;
+      --accent: #c45c3e;
+      --accent-dark: #9e4329;
+      --gold: #b8860b;
+      --muted: #6b5d52;
+      --border: rgba(26, 22, 20, 0.12);
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .serif {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* Decorative background */
+    .page {
+      position: relative;
+    }
+    .page::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(196, 92, 62, 0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(184, 134, 11, 0.06), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(245, 240, 234, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s ease;
+    }
+    header.scrolled { padding: 0.6rem 2rem; }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+    }
+    .logo span { color: var(--accent); }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-tag {
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero p {
+      max-width: 28rem;
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 1.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(196, 92, 62, 0.35);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 2px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Sections */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .section-header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    /* Cards grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card {
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(26, 22, 20, 0.1);
+    }
+    .card-image {
+      height: 200px;
+      background: linear-gradient(135deg, var(--ink) 0%, var(--muted) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .card-image.games { background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%); }
+    .card-body { padding: 1.5rem; }
+    .card-body h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .card-body .meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .card-body p {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* About */
+    .about {
+      background: linear-gradient(180deg, transparent 0%, rgba(26, 22, 20, 0.03) 100%);
+      border-radius: 16px;
+      padding: 4rem 3rem;
+      text-align: center;
+    }
+    .about p {
+      max-width: 36rem;
+      margin: 0 auto 1.5rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+    .about .serif {
+      font-size: 1.4rem;
+      color: var(--ink);
+      font-style: italic;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 3rem 2rem 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .footer-logo span { color: var(--accent); }
+    footer p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .footer-links {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* Panel overlay */
+    .panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 22, 20, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .panel-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .panel-overlay.is-open ~ body { overflow: hidden; }
+
+    .panel {
+      background: var(--paper);
+      border-radius: 12px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 48px rgba(26, 22, 20, 0.25);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.3s ease;
+    }
+    .panel-overlay.is-open .panel {
+      transform: scale(1) translateY(0);
+    }
+    .panel-header {
+      position: relative;
+      padding: 2rem 2rem 1rem;
+    }
+    .panel-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--muted);
+      transition: background 0.2s, color 0.2s;
+    }
+    .panel-close:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .panel-image {
+      height: 180px;
+      border-radius: 8px;
+      margin: 0 2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      color: rgba(255,255,255,0.4);
+      background: linear-gradient(135deg, var(--ink) 0%, var(--muted) 100%);
+    }
+    .panel-image.games { background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%); }
+    .panel-content {
+      padding: 0 2rem 2rem;
+    }
+    .panel-content h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .panel-content .meta {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .panel-content p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      nav { gap: 1.25rem; }
+      .hero { padding: 5rem 1.25rem 3rem; }
+      section { padding: 3rem 1.25rem; }
+      .panel-overlay { padding: 1rem; }
+      .panel-header, .panel-content { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .panel-image { margin-left: 1.5rem; margin-right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header id="header">
+      <a href="#" class="logo">Light Studios <span>·</span></a>
+      <nav>
+        <a href="#books">Books</a>
+        <a href="#games">Games</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <p class="hero-tag">Books & Games</p>
+      <h1>Stories that <em>live</em> on the page and on the screen</h1>
+      <p>We craft worlds you can read and worlds you can play. Discover our latest books and games.</p>
+      <div class="hero-btns">
+        <a href="#books" class="btn btn-primary">Explore Books</a>
+        <a href="#games" class="btn btn-outline">Explore Games</a>
+      </div>
+    </section>
+
+    <section id="books">
+      <div class="section-header">
+        <h2>Featured Books</h2>
+        <p>New releases and beloved titles from our catalog</p>
+      </div>
+      <div class="card-grid" id="booksGrid"></div>
+    </section>
+
+    <section id="games">
+      <div class="section-header">
+        <h2>Featured Games</h2>
+        <p>Our lastest releases in the gaming industry</p>
+      </div>
+      <div class="card-grid" id="gamesGrid"></div>
+    </section>
+
+    <section id="about">
+      <div class="about">
+        <h2 class="serif" style="margin-bottom: 1rem;">About Light Studio</h2>
+        <p class="serif">We believe the best stories don’t stay in one medium.</p>
+        <p>Light Studios is a very small team of people who love to create entertainment for others to enjoy.</p>
+      </div>
+    </section>
+
+    <footer id="contact">
+      <div class="footer-logo">Light Studio <span>·</span></div>
+      <p>Books & Games · Stories for the page and the table</p>
+      <div class="footer-links">
+        <a href="#">Newsletter</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+        <a href="mailto:hello@lightstudio.example">Contact</a>
+      </div>
+      <p style="margin-top: 2rem; font-size: 0.8rem;">© 2025 Light Studio. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <div class="panel-overlay" id="panelOverlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+      <div class="panel-header">
+        <button class="panel-close" id="panelClose" aria-label="Close panel">&times;</button>
+      </div>
+      <div class="panel-image" id="panelImage">"</div>
+      <div class="panel-content">
+        <h3 id="panelTitle">Title</h3>
+        <p class="meta" id="panelMeta">Meta</p>
+        <p id="panelDescription"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================
+       EDIT YOUR CONTENT HERE — single source of truth
+       Edit items below; cards and panels update automatically.
+       Add more by copying a block and changing the values.
+       ======================================== */
+
+    const CONTENT = {
+      books: [
+        {
+          title: "The Diary of Desteny",
+          meta: "Fiction · 2022",
+          imageIcon: "\u201C",  // quotation mark "
+          description: "",      // optional: longer description for the panel
+        },
+        {
+          title: "The Diary of Josh",
+          meta: "Fiction · 2023",
+          imageIcon: "\u201C",
+          description: "",
+        },
+        {
+          title: "The Diary of Desteny Collection",
+          meta: "Fiction · 2024",
+          imageIcon: "\u201C",
+          description: "",
+        },
+      ],
+      games: [
+        {
+          title: "The Diary of Desteny the Game",
+          meta: "Single Player · RPG · 2025",
+          imageIcon: "\u2694",  // crossed swords ⚔
+          description: "",      // optional: longer description for the panel
+        },
+      ],
+    };
+
+    /* ========================================
+       Rendering — no need to edit below
+       ======================================== */
+
+    function renderCard(item, type) {
+      const isGame = type === "games";
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.type = type;
+      card.dataset.index = CONTENT[type].indexOf(item);
+      card.innerHTML = `
+        <div class="card-image${isGame ? " games" : ""}">${item.imageIcon}</div>
+        <div class="card-body">
+          <h3>${escapeHtml(item.title)}</h3>
+          <p class="meta">${escapeHtml(item.meta)}</p>
+        </div>
+      `;
+      return card;
+    }
+
+    function renderPanel(item, type) {
+      const isGame = type === "games";
+      panelTitle.textContent = item.title;
+      panelMeta.textContent = item.meta;
+      panelDescription.textContent = item.description || "";
+      panelDescription.style.display = item.description ? "block" : "none";
+      panelImage.textContent = item.imageIcon;
+      panelImage.className = "panel-image" + (isGame ? " games" : "");
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    const booksGrid = document.getElementById("booksGrid");
+    const gamesGrid = document.getElementById("gamesGrid");
+    CONTENT.books.forEach((item) => booksGrid.appendChild(renderCard(item, "books")));
+    CONTENT.games.forEach((item) => gamesGrid.appendChild(renderCard(item, "games")));
+
+    const header = document.getElementById("header");
+    window.addEventListener("scroll", () => {
+      header.classList.toggle("scrolled", window.scrollY > 80);
+    });
+
+    const panelOverlay = document.getElementById("panelOverlay");
+    const panelClose = document.getElementById("panelClose");
+    const panelImage = document.getElementById("panelImage");
+    const panelTitle = document.getElementById("panelTitle");
+    const panelMeta = document.getElementById("panelMeta");
+    const panelDescription = document.getElementById("panelDescription");
+
+    function openPanel(type, index) {
+      const item = CONTENT[type][index];
+      renderPanel(item, type);
+      panelOverlay.classList.add("is-open");
+      panelOverlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      panelClose.focus();
+    }
+
+    function closePanel() {
+      panelOverlay.classList.remove("is-open");
+      panelOverlay.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    document.addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      if (!card) return;
+      const type = card.dataset.type;
+      const index = parseInt(card.dataset.index, 10);
+      openPanel(type, index);
+    });
+
+    panelClose.addEventListener("click", closePanel);
+    panelOverlay.addEventListener("click", (e) => {
+      if (e.target === panelOverlay) closePanel();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && panelOverlay.classList.contains("is-open")) closePanel();
+    });
+  </script>
+</body>
+</html>

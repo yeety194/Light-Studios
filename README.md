@@ -1,1 +1,1 @@
-# Light-Studio
+# Light-Studios
